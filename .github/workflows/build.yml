@@ -1,0 +1,26 @@
+name: Build VPK
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: vitasdk/vitasdk:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE="${VITASDK}/share/vita.toolchain.cmake"
+          make -j$(nproc)
+
+      - name: Upload VPK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ds3_tester
+          path: build/ds3_tester.vpk
