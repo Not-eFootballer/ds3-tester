@@ -270,6 +270,7 @@ int main(int argc, char *argv[]) {
 
     SceCtrlData pad;
     unsigned int btns;
+    int ps_detected = 0;  /* latches to 1 if PS button ever seen */
 
     while (1) {
         /* ── Read input from all ports ── */
@@ -328,9 +329,26 @@ int main(int argc, char *argv[]) {
         draw_btn(380, 165, 90, 28, "SELECT", (btns & SCE_CTRL_SELECT) != 0);
         draw_btn(490, 165, 90, 28, "START",  (btns & SCE_CTRL_START) != 0);
 
-        /* PS */
-        fill_circle(SCREEN_W/2, 215, 18, (btns & SCE_CTRL_INTERCEPTED) ? COL_PRESSED : COL_RELEASED);
-        draw_text_c(SCREEN_W/2, 208, "PS", (btns & SCE_CTRL_INTERCEPTED) ? 0xFF000000 : COL_TEXT, 2);
+        /* PS button (latched — stays green once detected) */
+        if (btns & SCE_CTRL_INTERCEPTED) ps_detected = 1;
+        fill_circle(SCREEN_W/2, 170, 18, ps_detected ? COL_PRESSED : COL_RELEASED);
+        draw_text_c(SCREEN_W/2, 163, "PS", ps_detected ? 0xFF000000 : COL_TEXT, 2);
+        if (ps_detected)
+            draw_text_c(SCREEN_W/2, 192, "DETECTED", COL_PRESSED, 1);
+
+        /* Rumble test (hold L1+R1) */
+        int rumble = (btns & SCE_CTRL_L1) && (btns & SCE_CTRL_R1);
+        {
+            SceCtrlActuator act;
+            memset(&act, 0, sizeof(act));
+            if (rumble) { act.small = 255; act.large = 255; }
+            for (int p = 0; p < 4; p++)
+                sceCtrlSetActuator(p, &act);
+        }
+        fill_rect(SCREEN_W/2 - 70, 200, 140, 30, rumble ? COL_PRESSED : COL_RELEASED);
+        draw_rect(SCREEN_W/2 - 70, 200, 140, 30, rumble ? COL_PRESSED : COL_BORDER);
+        draw_text_c(SCREEN_W/2, 205, "RUMBLE", rumble ? 0xFF000000 : COL_TEXT, 2);
+        draw_text_c(SCREEN_W/2, 235, "Hold L1+R1", COL_TEXT, 1);
 
         /* Sticks */
         draw_stick(250, 370, 70, lx, ly, "LEFT STICK");
