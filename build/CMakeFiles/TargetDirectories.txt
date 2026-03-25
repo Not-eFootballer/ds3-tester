@@ -1,0 +1,6 @@
+C:/Users/vboxuser/Desktop/ds3-tester/build/CMakeFiles/ds3_tester.dir
+C:/Users/vboxuser/Desktop/ds3-tester/build/CMakeFiles/ds3_tester-velf.dir
+C:/Users/vboxuser/Desktop/ds3-tester/build/CMakeFiles/ds3_tester.self-self.dir
+C:/Users/vboxuser/Desktop/ds3-tester/build/CMakeFiles/ds3_tester.vpk-vpk.dir
+C:/Users/vboxuser/Desktop/ds3-tester/build/CMakeFiles/edit_cache.dir
+C:/Users/vboxuser/Desktop/ds3-tester/build/CMakeFiles/rebuild_cache.dir
