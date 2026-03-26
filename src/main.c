@@ -223,7 +223,10 @@ static void draw_stick(int cx, int cy, int r, unsigned char ax, unsigned char ay
     fill_circle(px, py, 8, COL_ANALOG_PT);
     draw_text_c(cx, cy + r + 8, lbl, COL_TEXT, 2);
     char buf[32];
-    snprintf(buf, sizeof(buf), "X:%+4d Y:%+4d", ax - 128, ay - 128);
+    int vx = (ax - 128) * 1000 / 128;
+    int vy = (ay - 128) * 1000 / 128;
+    snprintf(buf, sizeof(buf), "X:%+d.%03d Y:%+d.%03d",
+        vx / 1000, abs(vx) % 1000, vy / 1000, abs(vy) % 1000);
     draw_text_c(cx, cy + r + 28, buf, COL_TITLE, 1);
 }
 
