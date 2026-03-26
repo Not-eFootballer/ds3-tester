@@ -272,6 +272,20 @@ int main(int argc, char *argv[]) {
     unsigned int btns;
     int ps_detected = 0;  /* latches to 1 if PS button ever seen */
 
+    /* Calibration: read stick rest position at startup */
+    int cal_lx = 128, cal_ly = 128, cal_rx = 128, cal_ry = 128;
+    {
+        sceKernelDelayThread(100000); /* wait 100ms for stable reading */
+        for (int p = 0; p < 4; p++) {
+            memset(&pad, 0, sizeof(pad));
+            sceCtrlPeekBufferPositiveExt2(p, &pad, 1);
+            if (pad.lx != 128) cal_lx = pad.lx;
+            if (pad.ly != 128) cal_ly = pad.ly;
+            if (pad.rx != 128) cal_rx = pad.rx;
+            if (pad.ry != 128) cal_ry = pad.ry;
+        }
+    }
+
     while (1) {
         /* ── Read input from all ports ── */
         btns = 0;
@@ -288,6 +302,18 @@ int main(int argc, char *argv[]) {
             if (pad.lt > lt) lt = pad.lt;
             if (pad.rt > rt) rt = pad.rt;
         }
+
+        /* Apply calibration offset */
+        int clx = 128 + (lx - cal_lx);
+        int cly = 128 + (ly - cal_ly);
+        int crx = 128 + (rx - cal_rx);
+        int cry = 128 + (ry - cal_ry);
+        /* Clamp to 0-255 */
+        if (clx < 0) clx = 0; if (clx > 255) clx = 255;
+        if (cly < 0) cly = 0; if (cly > 255) cly = 255;
+        if (crx < 0) crx = 0; if (crx > 255) crx = 255;
+        if (cry < 0) cry = 0; if (cry > 255) cry = 255;
+        lx = clx; ly = cly; rx = crx; ry = cry;
 
         /* ── Draw to back buffer (cur) ── */
 
