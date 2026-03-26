@@ -211,7 +211,7 @@ static void draw_stick(int cx, int cy, int r, unsigned char ax, unsigned char ay
     fill_circle(px, py, 8, COL_ANALOG_PT);
     draw_text_c(cx, cy + r + 8, lbl, COL_TEXT, 2);
     char buf[32];
-    snprintf(buf, sizeof(buf), "X:%3d Y:%3d", ax, ay);
+    snprintf(buf, sizeof(buf), "X:%+4d Y:%+4d", ax - 128, ay - 128);
     draw_text_c(cx, cy + r + 28, buf, COL_TITLE, 1);
 }
 
