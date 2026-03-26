@@ -276,6 +276,7 @@ int main(int argc, char *argv[]) {
         /* ── Read input from all ports ── */
         btns = 0;
         unsigned char lx = 128, ly = 128, rx = 128, ry = 128;
+        unsigned char lt = 0, rt = 0;
         for (int p = 0; p < 4; p++) {
             memset(&pad, 0, sizeof(pad));
             sceCtrlPeekBufferPositiveExt2(p, &pad, 1);
@@ -284,6 +285,8 @@ int main(int argc, char *argv[]) {
             if (pad.ly != 128) ly = pad.ly;
             if (pad.rx != 128) rx = pad.rx;
             if (pad.ry != 128) ry = pad.ry;
+            if (pad.lt > lt) lt = pad.lt;
+            if (pad.rt > rt) rt = pad.rt;
         }
 
         /* ── Draw to back buffer (cur) ── */
@@ -325,9 +328,22 @@ int main(int argc, char *argv[]) {
         draw_btn(460, 123, 80, 30, "L3", (btns & SCE_CTRL_L3) != 0);
         draw_btn(550, 123, 80, 30, "R3", (btns & SCE_CTRL_R3) != 0);
 
+        /* L2/R2 analog pressure bars (under L2/R2 buttons) */
+        {
+            int bar_w = 80, bar_h = 8, bar_y = 155;
+            int l2_fill = lt * bar_w / 255;
+            int r2_fill = rt * bar_w / 255;
+            fill_rect(280, bar_y, bar_w, bar_h, COL_PANEL);
+            if (l2_fill > 0) fill_rect(280, bar_y, l2_fill, bar_h, COL_ANALOG_PT);
+            draw_rect(280, bar_y, bar_w, bar_h, COL_BORDER);
+            fill_rect(370, bar_y, bar_w, bar_h, COL_PANEL);
+            if (r2_fill > 0) fill_rect(370, bar_y, r2_fill, bar_h, COL_ANALOG_PT);
+            draw_rect(370, bar_y, bar_w, bar_h, COL_BORDER);
+        }
+
         /* Center */
-        draw_btn(380, 165, 90, 28, "SELECT", (btns & SCE_CTRL_SELECT) != 0);
-        draw_btn(490, 165, 90, 28, "START",  (btns & SCE_CTRL_START) != 0);
+        draw_btn(380, 170, 90, 28, "SELECT", (btns & SCE_CTRL_SELECT) != 0);
+        draw_btn(490, 170, 90, 28, "START",  (btns & SCE_CTRL_START) != 0);
 
         /* PS button (latched — stays green once detected) */
         if (btns & SCE_CTRL_INTERCEPTED) ps_detected = 1;
